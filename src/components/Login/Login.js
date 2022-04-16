@@ -1,30 +1,31 @@
 import React from "react";
 import { useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import auth from "../../firebase.init";
 import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [
-    signInWithEmailAndPassword,
-    user,
-    loading,
-    error,
-  ] = useSignInWithEmailAndPassword(auth);
-
+  const [signInWithEmailAndPassword, user,loading, error] =
+    useSignInWithEmailAndPassword(auth);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
+  if(user){
+    navigate(from,{replace: true});
+  }
   const handleEmailBlur = (event) => {
     setEmail(event.target.value);
-    signInWithEmailAndPassword(email,password)
+    signInWithEmailAndPassword(email, password);
   };
   const handlePasswordBlur = (event) => {
     setPassword(event.target.value);
   };
-  const handleUserSignIn = event => {
+  const handleUserSignIn = (event) => {
     event.preventDefault();
-  }
+  };
   return (
     <div className="from-container">
       <div>
@@ -32,12 +33,27 @@ const Login = () => {
         <form onSubmit={handleUserSignIn}>
           <div className="input-group">
             <label htmlFor="email">Email</label>
-            <input onBlur={handleEmailBlur} type="email" name="email" id="" required />
+            <input
+              onBlur={handleEmailBlur}
+              type="email"
+              name="email"
+              id=""
+              required
+            />
           </div>
           <div className="input-group">
             <label htmlFor="password">Password</label>
-            <input onBlur={handlePasswordBlur} type="password" name="password" id="" required />
-            <p style={{color: 'red'}}>{error?.message}</p>
+            <input
+              onBlur={handlePasswordBlur}
+              type="password"
+              name="password"
+              id=""
+              required
+            />
+            <p style={{ color: "red" }}>{error?.message}</p>
+            {
+              loading && <p>Loading....</p>
+            }
           </div>
           <input className="form-submit" type="submit" value="Login" />
         </form>
@@ -48,9 +64,9 @@ const Login = () => {
           </Link>
         </p>
         <div className="line">
-            <div className="line-color"></div>
-            <p>Or</p>
-            <div className="line-color"></div>
+          <div className="line-color"></div>
+          <p>Or</p>
+          <div className="line-color"></div>
         </div>
       </div>
     </div>
